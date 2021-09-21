@@ -446,7 +446,7 @@
                         <SERVICE_NAME>${project.name}</SERVICE_NAME>
                         <JAR_LIBS>target/lib</JAR_LIBS>
                         <SWAGGER_UI>src/main/swagger-ui</SWAGGER_UI>
-                        <JAR_FILE>target/${project.artifactId}-${project.version}.${project.packaging}</JAR_FILE>
+                        <JAR_FILE>${project.artifactId}-${project.version}.${project.packaging}</JAR_FILE>
                     </buildArgs>
                 </configuration>
             </plugin>
