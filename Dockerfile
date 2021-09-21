@@ -1,5 +1,7 @@
 FROM openjdk:8-jre
-MAINTAINER David Flemström <dflemstr@spotify.com>
+MAINTAINER Denis Lavrushko <denis.lavrushko@iits-consulting.de>
+
+EXPOSE 8081
 
 ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/myservice/myservice.jar"]
 
