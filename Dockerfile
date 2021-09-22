@@ -3,6 +3,7 @@ MAINTAINER Denis Lavrushko <denis.lavrushko@iits-consulting.de>
 
 EXPOSE 8081
 
+ARG JAVA_OPTIONS
 ENTRYPOINT ["java", "-XX:+PrintFlagsFinal", "$JAVA_OPTIONS", "-jar", "/usr/share/ubirch/test-webserver.jar"]
 
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)
