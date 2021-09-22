@@ -1,6 +1,12 @@
-name: Build sample project
+name: Build development version
 
-on: push
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
 
 jobs:
   compile:
@@ -18,8 +24,17 @@ jobs:
           distribution: 'adopt'
           java-package: jdk
           java-version: ${{ matrix.java }}
+
+      - name: Get latest release version
+        uses: rez0n/actions-github-release@main
+        id: release_version
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: "nodejs/node"
+          type: "stable"
+
       - name: Compile the Project
-        run: mvn -B compile -Drevision=1.0.${{ github.run_number }}-SNAPSHOT
+        run: mvn -B compile -Drevision=${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}
   build:
     runs-on: ubuntu-20.04
     needs: compile
@@ -45,12 +60,12 @@ jobs:
           java-version: '8'
           java-package: jdk
       - name: Build and test project
-        run: mvn -B deploy -Drevision=1.0.${{ github.run_number }}-SNAPSHOT
-      - run: ls -lah target
+        run: mvn -B deploy -Drevision=${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: 1.0.${{ github.run_number }}-SNAPSHOT
+          tag_name: ${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}
+          prerelease: true
           files: |
             target/*.jar
 
