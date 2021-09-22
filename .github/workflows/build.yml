@@ -51,7 +51,7 @@ jobs:
           elif [[ "${{ steps.check_pr_labels_patch.outputs.result }}" = true ]]; then
             echo "CORRECT_LABEL=$(echo "patch")" >> $GITHUB_ENV
           else
-            echo "CORRECT_LABEL=$(echo "patch")" >> $GITHUB_ENV
+            exit 1
           fi
 
       - name: Get latest release version
