@@ -51,6 +51,7 @@ jobs:
           elif [[ "${{ steps.check_pr_labels_patch.outputs.result }}" = true ]]; then
             echo "CORRECT_LABEL=$(echo "patch")" >> $GITHUB_ENV
           else
+            echo "You need to specify correct label for your PR (major, minor or patch)"
             exit 1
           fi
 
