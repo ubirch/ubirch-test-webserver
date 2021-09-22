@@ -46,7 +46,7 @@ jobs:
           java-package: jdk
       - name: Build and test project
 #        run: mvn -B deploy -Drevision=1.0.${{ github.run_number }}-SNAPSHOT
-        run: mvn com.spotify:docker-maven-plugin:1.4.4:help -Ddetail=true
+        run: mvn com.spotify:dockerfile-maven-plugin:1.4.4:help -Ddetail=true
       - run: ls -lah target
       - name: Release
         uses: softprops/action-gh-release@v1
