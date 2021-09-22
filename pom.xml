@@ -438,7 +438,7 @@
                 </executions>
                 <configuration>
                     <buildDirectory>${project.build.outputDirectory}</buildDirectory>
-                    <repository>ubirch/ubirch-test-web-server</repository>
+                    <repository>iitsc.azurecr.io/images/ubirch-test-web-server</repository>
                     <tag>${build.number}</tag>
                     <buildArgs>
                         <VERSION>${project.version}</VERSION>
