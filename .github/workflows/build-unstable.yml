@@ -7,10 +7,10 @@ on:
       - edited
       - reopened
       - synchronize
-    paths:
-      - '!.github/**'
-      - '!README.md'
-      - '!pom.xml'
+#    paths:
+#      - '!.github/**'
+#      - '!README.md'
+#      - '!pom.xml'
 
 jobs:
   compile:
@@ -30,59 +30,66 @@ jobs:
           distribution: 'adopt'
           java-package: jdk
           java-version: ${{ matrix.java }}
-
-      - name: Get latest release version
-        uses: rez0n/actions-github-release@main
-        id: release_version
-        env:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{github.repository}}
-          type: "stable"
-      - run: echo ${{github.repository}}
-
-      - name: Set default version if release is not found
-        id: version_step
-        run: |
-          if [[ "${{ steps.release_version.outputs.release }}" = "" ]]; then
-            echo "NEW_VERSION=$(echo "0.0.1-${GITHUB_SHA::8}")" >> $GITHUB_ENV
-            echo "::set-output name=nv::0.0.1-${GITHUB_SHA::8}"
-          else
-            echo "NEW_VERSION=$(echo "${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}")" >> $GITHUB_ENV
-            echo "::set-output name=nv::${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}"
-          fi
-
-      - name: Compile the Project
-        run: mvn -B compile -Drevision=${{ env.NEW_VERSION }}
-  build:
-    runs-on: ubuntu-20.04
-    needs: compile
-    name: Build the Maven Project
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Login to Azure Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: iitsc.azurecr.io
-          username: iitsc
-          password: ${{ secrets.ACR_PASSWORD }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '8'
-          java-package: jdk
-      - name: Build and test project
-        run: mvn -B deploy -Drevision=${{ needs.compile.outputs.new_version }}
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ needs.compile.outputs.new_version }}
-          prerelease: true
-          files: |
-            target/*.jar
+      - run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+#      - name: Get latest release version
+#        uses: rez0n/actions-github-release@main
+#        id: release_version
+#        env:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          repository: ${{github.repository}}
+#          type: "stable"
+#      - run: echo ${{github.repository}}
+#
+#      - name: Set default version if release is not found
+#        id: version_step
+#        run: |
+#          if [[ "${{ steps.release_version.outputs.release }}" = "" ]]; then
+#            echo "NEW_VERSION=$(echo "0.0.1-${GITHUB_SHA::8}")" >> $GITHUB_ENV
+#            echo "::set-output name=nv::0.0.1-${GITHUB_SHA::8}"
+#          else
+#            echo "NEW_VERSION=$(echo "${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}")" >> $GITHUB_ENV
+#            echo "::set-output name=nv::${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}"
+#          fi
+#
+#      - name: Compile the Project
+#        run: mvn -B compile -Drevision=${{ env.NEW_VERSION }}
+#  build:
+#    runs-on: ubuntu-20.04
+#    needs: compile
+#    name: Build the Maven Project
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/cache@v2
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#      - name: Login to Azure Container Registry
+#        uses: docker/login-action@v1
+#        with:
+#          registry: iitsc.azurecr.io
+#          username: iitsc
+#          password: ${{ secrets.ACR_PASSWORD }}
+#      - name: Set up JDK 8
+#        uses: actions/setup-java@v2
+#        with:
+#          distribution: 'adopt'
+#          java-version: '8'
+#          java-package: jdk
+#      - name: Change version
+#        run: mvn versions:set versions:commit -DnewVersion=${{ needs.compile.outputs.new_version }}
+#      - name: Commit and push updated pom.xml
+#        uses: EndBug/add-and-commit@v7
+#        with:
+#          add: pom.xml
+#          message: "[Auto-update] pom.xml version updated"
+#      - name: Build and test project
+#        run: mvn -B deploy -Drevision=${{ needs.compile.outputs.new_version }}
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          tag_name: ${{ needs.compile.outputs.new_version }}
+#          prerelease: true
+#          files: |
+#            target/*.jar
