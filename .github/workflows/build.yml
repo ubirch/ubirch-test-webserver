@@ -1,120 +1,120 @@
-name: Build stable version
-
-on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - 'src/**'
-      - 'Dockerfile'
-      - 'pom.xml'
-
-jobs:
-  compile:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        java: [ 8 ]
-    name: Java ${{ matrix.java }} compile
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v2
-
-      - name: Check PR labels action step
-        id: check_pr_labels_major
-        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '["major"]'
-
-      - name: Check PR labels action step
-        id: check_pr_labels_minor
-        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '["minor"]'
-
-      - name: Check PR labels action step
-        id: check_pr_labels_patch
-        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '["patch"]'
-
-      - name: Select proper label
-        run: |
-          if [[ "${{ steps.check_pr_labels_major.outputs.result }}" = true ]]; then
-            echo "CORRECT_LABEL=$(echo "major")" >> $GITHUB_ENV
-          elif [[ "${{ steps.check_pr_labels_minor.outputs.result }}" = true ]]; then
-            echo "CORRECT_LABEL=$(echo "minor")" >> $GITHUB_ENV
-          elif [[ "${{ steps.check_pr_labels_patch.outputs.result }}" = true ]]; then
-            echo "CORRECT_LABEL=$(echo "patch")" >> $GITHUB_ENV
-          else
-            echo "You need to specify correct label for your PR (major, minor or patch)"
-            exit 1
-          fi
-
-      - name: Get latest release version
-        uses: rez0n/actions-github-release@main
-        id: release_version
-        env:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: "nodejs/node"
-          type: "stable"
-
-      - name: Calculate new version
-        uses: actions-ecosystem/action-bump-semver@v1
-        id: bump_semver
-        with:
-          current_version: ${{ steps.release_version.outputs.release }}
-          level: ${{ env.CORRECT_LABEL }}
-
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-package: jdk
-          java-version: ${{ matrix.java }}
-
-      - name: Compile the Project
-        run: mvn -B compile -Drevision=1.0.${{ github.run_number }}
-
-  build:
-    runs-on: ubuntu-20.04
-    needs: compile
-    name: Build the Maven Project
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Login to Azure Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: iitsc.azurecr.io
-          username: iitsc
-          password: ${{ secrets.ACR_PASSWORD }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '8'
-          java-package: jdk
-      - name: Build and test project
-        run: mvn -B deploy -Drevision=1.0.${{ github.run_number }}
-      - run: ls -lah target
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: 1.0.${{ github.run_number }}
-          files: |
-            target/*.jar
-
-#    - name: Upload Maven build artifact
-#      uses: actions/upload-artifact@v2
-#      with:
-#        path: target/
+#name: Build stable version
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#      - master
+#    paths:
+#      - 'src/**'
+#      - 'Dockerfile'
+#      - 'pom.xml'
+#
+#jobs:
+#  compile:
+#    runs-on: ubuntu-20.04
+#    strategy:
+#      matrix:
+#        java: [ 8 ]
+#    name: Java ${{ matrix.java }} compile
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v2
+#
+#      - name: Check PR labels action step
+#        id: check_pr_labels_major
+#        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          labels: '["major"]'
+#
+#      - name: Check PR labels action step
+#        id: check_pr_labels_minor
+#        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          labels: '["minor"]'
+#
+#      - name: Check PR labels action step
+#        id: check_pr_labels_patch
+#        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          labels: '["patch"]'
+#
+#      - name: Select proper label
+#        run: |
+#          if [[ "${{ steps.check_pr_labels_major.outputs.result }}" = true ]]; then
+#            echo "CORRECT_LABEL=$(echo "major")" >> $GITHUB_ENV
+#          elif [[ "${{ steps.check_pr_labels_minor.outputs.result }}" = true ]]; then
+#            echo "CORRECT_LABEL=$(echo "minor")" >> $GITHUB_ENV
+#          elif [[ "${{ steps.check_pr_labels_patch.outputs.result }}" = true ]]; then
+#            echo "CORRECT_LABEL=$(echo "patch")" >> $GITHUB_ENV
+#          else
+#            echo "You need to specify correct label for your PR (major, minor or patch)"
+#            exit 1
+#          fi
+#
+#      - name: Get latest release version
+#        uses: rez0n/actions-github-release@main
+#        id: release_version
+#        env:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          repository: "nodejs/node"
+#          type: "stable"
+#
+#      - name: Calculate new version
+#        uses: actions-ecosystem/action-bump-semver@v1
+#        id: bump_semver
+#        with:
+#          current_version: ${{ steps.release_version.outputs.release }}
+#          level: ${{ env.CORRECT_LABEL }}
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v2
+#        with:
+#          distribution: 'adopt'
+#          java-package: jdk
+#          java-version: ${{ matrix.java }}
+#
+#      - name: Compile the Project
+#        run: mvn -B compile -Drevision=1.0.${{ github.run_number }}
+#
+#  build:
+#    runs-on: ubuntu-20.04
+#    needs: compile
+#    name: Build the Maven Project
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/cache@v2
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#      - name: Login to Azure Container Registry
+#        uses: docker/login-action@v1
+#        with:
+#          registry: iitsc.azurecr.io
+#          username: iitsc
+#          password: ${{ secrets.ACR_PASSWORD }}
+#      - name: Set up JDK 8
+#        uses: actions/setup-java@v2
+#        with:
+#          distribution: 'adopt'
+#          java-version: '8'
+#          java-package: jdk
+#      - name: Build and test project
+#        run: mvn -B deploy -Drevision=1.0.${{ github.run_number }}
+#      - run: ls -lah target
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          tag_name: 1.0.${{ github.run_number }}
+#          files: |
+#            target/*.jar
+#
+##    - name: Upload Maven build artifact
+##      uses: actions/upload-artifact@v2
+##      with:
+##        path: target/
