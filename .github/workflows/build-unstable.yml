@@ -70,13 +70,6 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
           java-package: jdk
-      - name: Change version
-        run: mvn versions:set versions:commit -DnewVersion=${{ needs.compile.outputs.new_version }}
-      - name: Commit and push updated pom.xml
-        uses: EndBug/add-and-commit@v7
-        with:
-          add: pom.xml
-          message: "[Auto-update] pom.xml version updated"
       - name: Build and test project
         run: mvn -B deploy -Drevision=${{ needs.compile.outputs.new_version }}
       - name: Release
