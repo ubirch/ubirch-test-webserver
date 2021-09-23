@@ -33,7 +33,7 @@
 
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-        <revision>1.0.0-SNAPSHOT</revision>
+        <revision>1.0.0</revision>
         <!-- versions -->
 
         <scala.logging.version>3.9.0</scala.logging.version>
