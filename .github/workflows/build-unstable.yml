@@ -7,10 +7,10 @@ on:
       - edited
       - reopened
       - synchronize
-#    paths:
-#      - '!.github/**'
-#      - '!README.md'
-#      - '!pom.xml'
+    paths:
+      - '!.github/**'
+      - '!README.md'
+      - '!pom.xml'
 
 jobs:
   compile:
