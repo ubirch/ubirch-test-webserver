@@ -112,6 +112,8 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }}
           mvn versions:commit -DprocessAllModules
+          cat /home/runner/work/ubirch-test-webserver/ubirch-test-webserver/pom.xml
+          git add pom.xml
       - name: Commit and push updated pom.xml
         uses: CasperWA/push-protected@v2
         with:
