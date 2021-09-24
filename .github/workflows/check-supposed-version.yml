@@ -95,7 +95,7 @@ jobs:
 #              body: output
 #            })
 #      - name: Change version
-#        run: mvn versions:set versions:commit -DnewVersion=${{ steps.bump_semver.outputs.new_version }}
+#        run: mvn versions:set versions:commit -DnewVersion=${{ steps.bump_semver.outputs.new_version }} -DprocessAllModules
 #      - name: Commit and push updated pom.xml
 #        uses: EndBug/add-and-commit@v7
 #        with:

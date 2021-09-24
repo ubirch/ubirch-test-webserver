@@ -437,7 +437,7 @@
                 </executions>
                 <configuration>
                     <buildDirectory>${project.build.outputDirectory}</buildDirectory>
-                    <repository>iitsc.azurecr.io/images/ubirch-test-web-server</repository>
+                    <repository>docker.io/behoof4mind/ubirch-test-web-server</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
                         <VERSION>${project.version}</VERSION>
