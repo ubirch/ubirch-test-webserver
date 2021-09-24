@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - '.gitignore'
-      - 'pom.xml'
-      - 'README.md'
+    paths:
+      - '**'
+      - '!chart/**'
+      - '!pom.xml'
+      - '!README.md'
 
 jobs:
   compile:

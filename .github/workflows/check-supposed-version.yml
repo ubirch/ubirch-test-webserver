@@ -8,11 +8,11 @@ on:
       - opened
       - edited
       - synchronize
-    paths-ignore:
-      - '.github/**'
-      - '.gitignore'
-      - 'pom.xml'
-      - 'README.md'
+    paths:
+      - '**'
+      - '!chart/**'
+      - '!pom.xml'
+      - '!README.md'
 
 jobs:
   enforce-label:
@@ -82,18 +82,18 @@ jobs:
         run: |
           echo "::group::Version that should be released already exists in GitHub tags"
           exit 1
-      - uses: actions/github-script@0.9.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `*Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, New supposed version: \`${{ steps.bump_semver.outputs.new_version }}\`*`;
-
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+#      - uses: actions/github-script@0.9.0
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const output = `*Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, New supposed version: \`${{ steps.bump_semver.outputs.new_version }}\`*`;
+#
+#            github.issues.createComment({
+#              issue_number: context.issue.number,
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              body: output
+#            })
 #      - name: Change version
 #        run: mvn versions:set versions:commit -DnewVersion=${{ steps.bump_semver.outputs.new_version }}
 #      - name: Commit and push updated pom.xml

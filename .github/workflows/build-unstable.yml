@@ -8,9 +8,10 @@ on:
       - reopened
       - synchronize
     paths:
-      - '!.github/**'
-      - '!README.md'
+      - '**'
+      - '!chart/**'
       - '!pom.xml'
+      - '!README.md'
 
 jobs:
   compile:
@@ -24,12 +25,8 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
-          java-package: jdk
-          java-version: ${{ matrix.java }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Get current release version
         id: release_version
         run: |
@@ -37,13 +34,20 @@ jobs:
       - name: Set default version if release is not found
         id: version_step
         run: |
+          SHA=$(git rev-parse --short ${{ github.event.pull_request.head.sha || github.sha }})
           if [[ "${{ steps.release_version.outputs.release }}" = "" ]]; then
-            echo "NEW_VERSION=$(echo "0.0.1-${GITHUB_SHA::8}")" >> $GITHUB_ENV
-            echo "::set-output name=nv::0.0.1-${GITHUB_SHA::8}"
+            echo "NEW_VERSION=$(echo "0.0.1-$SHA")" >> $GITHUB_ENV
+            echo "::set-output name=nv::0.0.1-$SHA"
           else
-            echo "NEW_VERSION=$(echo "${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}")" >> $GITHUB_ENV
-            echo "::set-output name=nv::${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}"
+            echo "NEW_VERSION=$(echo "${{ steps.release_version.outputs.release }}-$SHA")" >> $GITHUB_ENV
+            echo "::set-output name=nv::${{ steps.release_version.outputs.release }}-$SHA"
           fi
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-package: jdk
+          java-version: ${{ matrix.java }}
       - name: Compile the Project
         run: mvn -B compile -DnewVersion=${{ env.NEW_VERSION }}
   build:
@@ -83,11 +87,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `*Pusher: @${{ github.actor }}
+            const output = `Pusher: @${{ github.actor }}
             Action: \`${{ github.event_name }}\`
-            Released version after merge: \`${{ steps.bump_semver.outputs.new_version }}\`*
-            Current version: \`${{ needs.compile.outputs.new_version }}\
-            Docker image: \`iitsc.azurecr.io/images/ubirch-test-web-server:\`${{ steps.bump_semver.outputs.new_version }}\`\``;
+            Released version after merge: \`${{ needs.compile.outputs.new_version }}\`
+            Current version: \`${{ needs.compile.outputs.new_version }}\`
+            Docker image: \`iitsc.azurecr.io/images/ubirch-test-web-server:${{ needs.compile.outputs.new_version }}\`
+            Your application link: https://ci.dev.ubirch.com/applications/${{ github.event.repository.name }}`;
 
             github.issues.createComment({
               issue_number: context.issue.number,
