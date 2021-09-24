@@ -112,6 +112,8 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }}
           mvn versions:commit -DprocessAllModules
+          git config --global user.email "denis.lavrushko@iits-consulting.de"
+          git config --global user.name "Denis Lavrushko"
           git add pom.xml
           git commit -m "[Auto-Update] Version updated"
           git push
