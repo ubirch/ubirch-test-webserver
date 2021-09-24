@@ -86,10 +86,10 @@ jobs:
     runs-on: ubuntu-20.04
     needs: compile
     name: Build the Maven Project
-    env:
-      GITHUB_TOKEN: ${{ secrets.TOKEN_DENIS }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.TOKEN_DENIS }}
       - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
@@ -112,8 +112,9 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }}
           mvn versions:commit -DprocessAllModules
-          cat /home/runner/work/ubirch-test-webserver/ubirch-test-webserver/pom.xml
           git add pom.xml
+          git commit -m "[Auto-Update] Version updated"
+          git push
       - name: Commit and push updated pom.xml
         uses: CasperWA/push-protected@v2
         with:
