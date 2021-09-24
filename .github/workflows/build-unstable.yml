@@ -45,7 +45,7 @@ jobs:
             echo "::set-output name=nv::${{ steps.release_version.outputs.release }}-${GITHUB_SHA::8}"
           fi
       - name: Compile the Project
-        run: mvn -B compile -Drevision=${{ env.NEW_VERSION }}
+        run: mvn -B compile -DnewVersion=${{ env.NEW_VERSION }}
   build:
     runs-on: ubuntu-20.04
     needs: compile
@@ -71,7 +71,7 @@ jobs:
           java-version: '8'
           java-package: jdk
       - name: Build and test project
-        run: mvn -B deploy -Drevision=${{ needs.compile.outputs.new_version }}
+        run: mvn -B deploy -DnewVersion=${{ needs.compile.outputs.new_version }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - master
-    paths:
-      - 'src/**'
-      - 'Dockerfile'
+    paths-ignore:
+      - '.github/**'
+      - '.gitignore'
       - 'pom.xml'
+      - 'README.md'
 
 jobs:
   compile:
@@ -77,12 +77,14 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Compile the Project
-        run: mvn -B compile -Drevision=${{ steps.bump_semver.outputs.new_version }}
+        run: mvn -B compile -DnewVersion=${{ steps.bump_semver.outputs.new_version }}
 
   build:
     runs-on: ubuntu-20.04
     needs: compile
     name: Build the Maven Project
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN_DENIS }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -112,7 +114,7 @@ jobs:
           message: "[Auto-update] pom.xml version updated"
           branch: ${{ github.head_ref }}
       - name: Build and test project
-        run: mvn -B deploy -Drevision=${{ needs.compile.outputs.new_version }}
+        run: mvn -B deploy -DnewVersion=${{ needs.compile.outputs.new_version }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
