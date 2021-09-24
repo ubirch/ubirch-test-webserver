@@ -110,7 +110,7 @@ jobs:
           java-package: jdk
       - name: Change version
         run: |
-          mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }} -DprocessAllModules
+          mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }}
           mvn versions:commit -DprocessAllModules
       - name: Commit and push updated pom.xml
         uses: CasperWA/push-protected@v2
