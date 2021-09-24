@@ -78,7 +78,9 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Compile the Project
-        run: mvn -B compile -DnewVersion=${{ steps.bump_semver.outputs.new_version }} -DprocessAllModules
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.bump_semver.outputs.new_version }} -DprocessAllModules
+          mvn -B compile
 
   build:
     runs-on: ubuntu-20.04
@@ -107,7 +109,9 @@ jobs:
           java-version: '8'
           java-package: jdk
       - name: Change version
-        run: mvn versions:set versions:commit -DnewVersion=${{ needs.compile.outputs.new_version }} -DprocessAllModules
+        run: |
+          mvn versions:set -DnewVersion=${{ needs.compile.outputs.new_version }} -DprocessAllModules
+          mvn versions:commit -DprocessAllModules
       - name: Commit and push updated pom.xml
         uses: CasperWA/push-protected@v2
         with:
