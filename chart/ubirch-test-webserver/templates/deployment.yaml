@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubirch-test-webserver
+  labels:
+    app: test-webserver
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: test-webserver
+  template:
+    metadata:
+      labels:
+        app: test-webserver
+    spec:
+      containers:
+        - name: test-webserver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.port }}
+

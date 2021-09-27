@@ -6,7 +6,7 @@
     <!-- info -->
     <groupId>com.ubirch.test</groupId>
     <artifactId>web-server</artifactId>
-    <version>0.1.0</version>
+    <version>2.0.3</version>
     <packaging>jar</packaging>
 
     <organization>
@@ -33,7 +33,6 @@
 
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-
         <!-- versions -->
 
         <scala.logging.version>3.9.0</scala.logging.version>
@@ -65,7 +64,7 @@
         <!-- plugins -->
         <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
         <scalariform.version>0.2.2</scalariform.version>
-        <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
+        <scala-maven-plugin.version>4.5.4</scala-maven-plugin.version>
         <maven-surefire-plugin.version>2.7</maven-surefire-plugin.version>
         <scalatest-maven-plugin.version>1.0</scalatest-maven-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -222,9 +221,9 @@
 
         <!-- PAUL CHECK HERE-->
         <dependency>
-            <groupId>com.ubirch.testlib</groupId>
-            <artifactId>ubirch-lib-test</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <groupId>com.github.behoof4mind</groupId>
+            <artifactId>ubirch-test-maven-lib</artifactId>
+            <version>1.0.35-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
@@ -252,6 +251,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
+            </plugin>
 
             <!-- scala compiler -->
             <plugin>
@@ -438,15 +442,15 @@
                 </executions>
                 <configuration>
                     <buildDirectory>${project.build.outputDirectory}</buildDirectory>
-                    <repository>ubirch/ubirch-test-web-server</repository>
-                    <tag>${build.number}</tag>
+                    <repository>docker.io/behoof4mind/ubirch-test-web-server</repository>
+                    <tag>${project.version}</tag>
                     <buildArgs>
                         <VERSION>${project.version}</VERSION>
                         <BUILD>${build.number}</BUILD>
                         <SERVICE_NAME>${project.name}</SERVICE_NAME>
                         <JAR_LIBS>target/lib</JAR_LIBS>
                         <SWAGGER_UI>src/main/swagger-ui</SWAGGER_UI>
-                        <JAR_FILE>target/${project.build.finalName}.${project.packaging}</JAR_FILE>
+                        <JAR_FILE>${project.artifactId}-${project.version}.${project.packaging}</JAR_FILE>
                     </buildArgs>
                 </configuration>
             </plugin>
