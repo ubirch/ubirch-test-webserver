@@ -94,11 +94,3 @@ jobs:
 #              repo: context.repo.repo,
 #              body: output
 #            })
-#      - name: Change version
-#        run: mvn versions:set versions:commit -DnewVersion=${{ steps.bump_semver.outputs.new_version }} -DprocessAllModules
-#      - name: Commit and push updated pom.xml
-#        uses: EndBug/add-and-commit@v7
-#        with:
-#          add: pom.xml
-#          message: "[Auto-update] pom.xml version updated"
-#          branch: ${{ github.head_ref }}

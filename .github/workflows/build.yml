@@ -117,11 +117,6 @@ jobs:
           git add pom.xml
           git commit -m "[Auto-Update] Version updated"
           git push
-      - name: Commit and push updated pom.xml
-        uses: CasperWA/push-protected@v2
-        with:
-          token: ${{ secrets.TOKEN_DENIS }}
-          branch: main
       - name: Build and test project
         run: mvn -B deploy -DnewVersion=${{ needs.compile.outputs.new_version }} -DprocessAllModules
       - name: Release
