@@ -118,7 +118,7 @@ jobs:
             Action: \`${{ github.event_name }}\`
             Released version after merge: \`${{ steps.bump_semver.outputs.new_version }}\`
             Current version: \`${{ needs.compile.outputs.new_version }}\`
-            Docker image: \`docker.io/ubirch-test-web-server:${{ needs.compile.outputs.new_version }}\`
+            Docker image: \`docker.io/behoof4mind/ubirch-test-web-server:${{ needs.compile.outputs.new_version }}\`
             Your application link: [dev/${{ github.event.repository.name }}](https://ci.dev.ubirch.com/applications/${{ github.event.repository.name }})`;
 
             github.issues.createComment({
